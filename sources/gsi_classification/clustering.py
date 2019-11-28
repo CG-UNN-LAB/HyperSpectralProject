@@ -24,10 +24,8 @@ def arg_max_compliance(pix, sig_clusters, threshold_clusters):
             max_i = i
     return max_e, max_i
 
-def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = False, rgb_image = False):
-    
-    HSI = np.array(HSI)
-
+def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = False, rgb_image = False): 
+   HSI = np.array(HSI)
     rgb_image = np.array(rgb_image)
     
     amo_of_pix = HSI.shape[0]
@@ -54,12 +52,31 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
         if value_mask_on:
             value_mask[0] = 1
     else:
-        signatures = clusters[0]
-        amo_of_pix_clusts = clusters[1]
-        thresholds = clusters[2]
+        
+        try:
+            assert(len(clusters) == 3)
+        except AssertionError:
+            #print('dimension cluster error')
+            #print('too many options')
+            return
+        
+        try:
+            assert( len(clusters[0]) == len(clusters[1]) == len(clusters[2]) )
+        except AssertionError:
+            #print('dimension cluster error')
+            #print('different dimensions of parameters')
+            return
+        
+        signatures = np.array( clusters[0] )
+        amo_of_pix_clusts = np.array( clusters[1] )
+        thresholds = np.array( clusters[2] )
         start_clust = 0
         for amount in amo_of_pix_clusts:
             amount = 0
+    
+    #print(signatures)
+    #print(amo_of_pix_clusts)
+    #print(thresholds)
     
     #print(amo_of_pix)
     for i in range(start_clust, amo_of_pix):
@@ -82,12 +99,10 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
             if value_mask_on:
                 value_mask[i] = 1.0
                 
-        if i % 1000 == 0:
-            print('\r', end = '')
-            print(i,  end = '')
-
-    #print('Cluster mask shape = ', cluster_mask_color.shape)
-    #print('RGB image shape = ', rgb_image.shape)
+        #if i % 1000 == 0:
+        #    print('\r', end = '')
+        #    print(i,  end = '')
+    
     for i in range(len(signatures)):
         for col in range(3):
             cluster_mask_color[cluster_mask == i + 1, col] = rgb_image[cluster_mask == i + 1, col].mean()
