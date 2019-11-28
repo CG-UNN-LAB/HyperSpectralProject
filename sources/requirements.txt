@@ -1,0 +1,6 @@
+pyqt5
+numba
+numpy
+argparse
+spectral
+qimage2ndarray
