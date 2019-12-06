@@ -3,35 +3,39 @@ from PyQt5.QtWidgets import QWidget, QLabel, QMainWindow, QFileDialog
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
-from imageviewer import ImageViewer
-from hsimage import HSImage
+from GUI.imageviewer import ImageViewer
+from gsi_classification.hsimage import HSImage
 import os
 import spectral.io.envi as envi
-import clustering
+import gsi_classification.clustering
+from GUI.windowsignatures import WindowSignatures
 import qimage2ndarray
 
-from clustering import reference_clustering
+from gsi_classification.clustering import reference_clustering
+
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, *args, inputFile = None, **kwargs):
+    def __init__(self, *args, inputFile=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         uic.loadUi('GUI/mainwindow.ui', self)
         self.imageviewer = ImageViewer()
         self.viewerLayout.addWidget(self.imageviewer)
-        self.imageviewer.midMouseButtonPressed.connect(self._addCluster)
+        self.signatures = []
 
+        self.imageviewer.midMouseButtonPressed.connect(self._addCluster)
         self.actionOpen_file.triggered.connect(self._openImage)
+        self.actionSignatures_window.triggered.connect(
+            self._openSignaturesWindow)
         self.sliderLayers.valueChanged.connect(self._changeLayer)
         self.buttonRgbImage.clicked.connect(self._showRgbImage)
         self.buttonShowClusters.clicked.connect(self._showClustersImage)
-
 
         if inputFile:
             self._loadFile(inputFile)
 
     def _loadFile(self, fileName):
-        if fileName.endswith(('jpg','bmp','png')):
+        if fileName.endswith(('jpg', 'bmp', 'png')):
             self.imageviewer.loadImageFromFile(fileName)
             self.sliderLayers.setMaximum(1)
         elif fileName.endswith(('npy')):
@@ -49,12 +53,12 @@ class MainWindow(QMainWindow):
         fileName, dummy = QFileDialog.getOpenFileName(self, "Open image file.")
         self._loadFile(fileName)
 
-
     def _changeLayer(self):
         newLayer = self.sliderLayers.value()
         try:
             if self.hsimage:
-                self.imageviewer.setImage(self.hsimage.getLayerAsQImage(newLayer))
+                self.imageviewer.setImage(
+                    self.hsimage.getLayerAsQImage(newLayer))
         except AttributeError:
             print('Not numpy image loaded')
 
@@ -68,7 +72,8 @@ class MainWindow(QMainWindow):
         try:
             channels = self._parseRgbValuesFromForm()
             if self.hsimage:
-                self.imageviewer.setImage(self.hsimage.getRgbImage(channels = channels))
+                self.imageviewer.setImage(
+                    self.hsimage.getRgbImage(channels=channels))
         except AttributeError:
             print("Not numpy image loaded or wrong values in textboxes")
 
@@ -83,12 +88,20 @@ class MainWindow(QMainWindow):
         #spectr = np.expand_dims(spectr, axis = 0)
         #cluster = [spectr, [1], [0.95]]
 
+        try:
+            threshold = float(self.lineThreshold.text())
+        except ValueError:
+            print('Wrong value in textbox Threshold')
+            return
 
-        rgb_image = self.hsimage.getNumpyRgbImage(channels = (35, 20, 7))
-        line_RGB_hsi = np.float64(rgb_image.reshape((-1, rgb_image.shape[2]))) * 255
+        rgb_image = self.hsimage.getNumpyRgbImage(channels=(35, 20, 7))
+        line_RGB_hsi = np.float64(
+            rgb_image.reshape((-1, rgb_image.shape[2]))) * 255
 
-        line_hsi = self.hsimage.dataArray.reshape((-1, self.hsimage.dataArray.shape[2]))
-        mask_hsi, color_mask_hsi, cluster_hsi = reference_clustering(line_hsi, 0.95, [], False, line_RGB_hsi)
+        line_hsi = self.hsimage.dataArray.reshape(
+            (-1, self.hsimage.dataArray.shape[2]))
+        mask_hsi, color_mask_hsi, cluster_hsi = reference_clustering(
+            line_hsi, threshold, [], False, line_RGB_hsi)
 
         #print("MASK HSI SHAPE = ", mask_hsi.shape)
         #print("COLOR MASK HSI SHAPE = ", color_mask_hsi.shape)
@@ -100,5 +113,9 @@ class MainWindow(QMainWindow):
         if np.max(img) != 0.0:
             img = img // (np.max(img) / 255.0)
         self.imageviewer.setImage(qimage2ndarray.array2qimage(img))
+        self.signatures += cluster_hsi
 
-
+    def _openSignaturesWindow(self):
+        self.w = WindowSignatures()
+        self.w.setSignatures(self.signatures)
+        self.w.show()
