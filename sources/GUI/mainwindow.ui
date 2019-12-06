@@ -252,7 +252,14 @@
     </property>
     <addaction name="actionAbout_program"/>
    </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <addaction name="actionSignatures_window"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuWindows"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -264,6 +271,11 @@
   <action name="actionAbout_program">
    <property name="text">
     <string>About program</string>
+   </property>
+  </action>
+  <action name="actionSignatures_window">
+   <property name="text">
+    <string>Signatures window</string>
    </property>
   </action>
  </widget>
