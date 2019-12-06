@@ -54,9 +54,26 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
         if value_mask_on:
             value_mask[0] = 1
     else:
-        signatures = clusters[0]
-        amo_of_pix_clusts = clusters[1]
-        thresholds = clusters[2]
+        try:
+            assert(len(clusters) == 3)
+        except AssertionError:
+            print('dimension cluster error')
+            print('too many options')
+            return
+
+        try:
+            assert( len(clusters[0]) == len(clusters[1]) == len(clusters[2]) )
+        except AssertionError:
+            print('dimension cluster error')
+            print('different dimensions of parameters')
+            return
+
+        signatures = np.array( clusters[0] )
+        amo_of_pix_clusts = np.array( clusters[1] )
+        thresholds = np.array( clusters[2] )
+
+
+
         start_clust = 0
         for amount in amo_of_pix_clusts:
             amount = 0
