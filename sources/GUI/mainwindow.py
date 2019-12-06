@@ -84,11 +84,18 @@ class MainWindow(QMainWindow):
         #cluster = [spectr, [1], [0.95]]
 
 
+        try:
+            threshold = float(self.lineThreshold.text())
+        except ValueError:
+            print('Wrong value in textbox Threshold')
+            return
+
+        
         rgb_image = self.hsimage.getNumpyRgbImage(channels = (35, 20, 7))
         line_RGB_hsi = np.float64(rgb_image.reshape((-1, rgb_image.shape[2]))) * 255
 
         line_hsi = self.hsimage.dataArray.reshape((-1, self.hsimage.dataArray.shape[2]))
-        mask_hsi, color_mask_hsi, cluster_hsi = reference_clustering(line_hsi, 0.95, [], False, line_RGB_hsi)
+        mask_hsi, color_mask_hsi, cluster_hsi = reference_clustering(line_hsi, threshold, [], False, line_RGB_hsi)
 
         #print("MASK HSI SHAPE = ", mask_hsi.shape)
         #print("COLOR MASK HSI SHAPE = ", color_mask_hsi.shape)
