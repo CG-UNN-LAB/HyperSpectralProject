@@ -4,3 +4,5 @@ numpy
 argparse
 spectral
 qimage2ndarray
+cv2
+pyqtgraph

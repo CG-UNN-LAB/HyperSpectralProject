@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>866</width>
-    <height>587</height>
+    <width>944</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,1">
       <property name="sizeConstraint">
        <enum>QLayout::SetMaximumSize</enum>
       </property>
@@ -65,7 +65,7 @@
            <x>0</x>
            <y>0</y>
            <width>200</width>
-           <height>461</height>
+           <height>570</height>
           </rect>
          </property>
          <attribute name="label">
@@ -75,7 +75,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>120</y>
+            <y>90</y>
             <width>181</width>
             <height>31</height>
            </rect>
@@ -88,10 +88,13 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>280</y>
+            <y>300</y>
             <width>181</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
            <string>Show Clusters image</string>
@@ -101,7 +104,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>0</y>
             <width>81</width>
             <height>21</height>
            </rect>
@@ -114,7 +117,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>50</y>
+            <y>30</y>
             <width>81</width>
             <height>21</height>
            </rect>
@@ -127,7 +130,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>90</y>
+            <y>60</y>
             <width>81</width>
             <height>21</height>
            </rect>
@@ -139,10 +142,10 @@
          <widget class="QLineEdit" name="lineR">
           <property name="geometry">
            <rect>
-            <x>92</x>
+            <x>90</x>
             <y>0</y>
             <width>91</width>
-            <height>31</height>
+            <height>21</height>
            </rect>
           </property>
           <property name="text">
@@ -152,10 +155,10 @@
          <widget class="QLineEdit" name="lineG">
           <property name="geometry">
            <rect>
-            <x>92</x>
-            <y>40</y>
+            <x>90</x>
+            <y>30</y>
             <width>91</width>
-            <height>31</height>
+            <height>21</height>
            </rect>
           </property>
           <property name="text">
@@ -165,10 +168,10 @@
          <widget class="QLineEdit" name="lineB">
           <property name="geometry">
            <rect>
-            <x>92</x>
-            <y>80</y>
+            <x>90</x>
+            <y>60</y>
             <width>91</width>
-            <height>31</height>
+            <height>21</height>
            </rect>
           </property>
           <property name="text">
@@ -179,7 +182,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>160</y>
+            <y>130</y>
             <width>181</width>
             <height>71</height>
            </rect>
@@ -188,10 +191,10 @@
          <widget class="QLineEdit" name="lineThreshold">
           <property name="geometry">
            <rect>
-            <x>90</x>
-            <y>240</y>
+            <x>100</x>
+            <y>270</y>
             <width>91</width>
-            <height>31</height>
+            <height>21</height>
            </rect>
           </property>
           <property name="text">
@@ -201,14 +204,270 @@
          <widget class="QLabel" name="label_Threshold">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>250</y>
-            <width>81</width>
+            <x>30</x>
+            <y>270</y>
+            <width>61</width>
             <height>21</height>
            </rect>
           </property>
           <property name="text">
            <string>Threshold</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_Metric_selection">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>240</y>
+            <width>91</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <item>
+           <property name="text">
+            <string>angle</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>pearson</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>module</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>chebyshev</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="label">
+          <property name="geometry">
+           <rect>
+            <x>50</x>
+            <y>240</y>
+            <width>41</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Metric</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_2">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>520</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>angle: 0.9 ~ 0.99</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_3">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>530</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>pearson: 0.9 ~ 0.99</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_4">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>540</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>module: 8000 ~ 10000</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_5">
+          <property name="geometry">
+           <rect>
+            <x>50</x>
+            <y>550</y>
+            <width>141</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>chebyshev: 2500 ~ 4000</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="radioButton_use_reference">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>340</y>
+            <width>171</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>(WiP) Use available reference</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_quan_of_class">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>360</y>
+            <width>131</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Quantity of classes:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_show_layer">
+          <property name="geometry">
+           <rect>
+            <x>6</x>
+            <y>550</y>
+            <width>61</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>layer: 0</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="checkBox_canny">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>210</y>
+            <width>70</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Canny</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_num_class">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>380</y>
+            <width>101</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Сlass number:</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_num_of_pix">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>400</y>
+            <width>181</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Number of pixels in the class:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_bac_to_img">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>110</x>
+            <y>430</y>
+            <width>81</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Back to image</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pushButton_show_hist">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>430</y>
+            <width>81</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Show hist</string>
           </property>
          </widget>
         </widget>
@@ -218,7 +477,7 @@
            <x>0</x>
            <y>0</y>
            <width>200</width>
-           <height>461</height>
+           <height>570</height>
           </rect>
          </property>
          <attribute name="label">
@@ -236,8 +495,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>866</width>
-     <height>22</height>
+     <width>944</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

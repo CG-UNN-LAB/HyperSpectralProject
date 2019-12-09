@@ -171,6 +171,7 @@ class ImageViewer(QGraphicsView):
         scenePos = self.mapToScene(event.pos())
         if event.button() == Qt.LeftButton:
             self.leftMouseButtonDoubleClicked.emit(scenePos.x(), scenePos.y())
+
         elif event.button() == Qt.RightButton:
             if self.canZoom:
                 self.zoomStack = []  # Clear zoom stack.
