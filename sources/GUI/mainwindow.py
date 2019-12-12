@@ -79,8 +79,23 @@ class MainWindow(QMainWindow):
 
     def _addCluster(self, x, y):
         text = self.textBoxClusters.toPlainText()
-        newLine = '{} {}'.format(int(x), int(y))
+        newLine = 'Add cluster pos {} {}'.format(int(x), int(y))
         self.textBoxClusters.setText(text + newLine + '\n')
+
+        if self.signatures == []:
+            spectr = np.array(self.hsimage.dataArray[int(x), int(y), 0:])
+            spectr = np.expand_dims(spectr, axis=0)
+            cluster = [spectr, [1], [1.0]]
+            self.signatures += cluster
+        else:
+            spectr = np.array(self.hsimage.dataArray[int(x), int(y), 0:])
+            spectr = np.expand_dims(spectr, axis=0)
+            spectr = np.concatenate((self.signatures[0], spectr), axis=0)
+
+            pixcounts = self.signatures[1] + [1]
+            probs = self.signatures[2] + [1.0]
+
+            self.signatures = [spectr, pixcounts, probs]
 
     def _showClustersImage(self):
 
@@ -106,7 +121,7 @@ class MainWindow(QMainWindow):
         #print("MASK HSI SHAPE = ", mask_hsi.shape)
         #print("COLOR MASK HSI SHAPE = ", color_mask_hsi.shape)
         #print("CLUSTER HSI SHAPE = ", len(cluster_hsi))
-        print(cluster_hsi[0].shape)
+        # print(cluster_hsi[0].shape)
 
         img = color_mask_hsi.reshape(rgb_image.shape)
         img = img - np.min(img)
