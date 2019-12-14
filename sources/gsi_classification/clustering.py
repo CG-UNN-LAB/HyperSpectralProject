@@ -161,43 +161,66 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
             представляется в виде RGB синтеза ГСИ. Представляется в виде линейного массива,
             где изображение хранится по строкам. В случае отсутствия RGB изображения для
             раскраски классов будет использоваться заданный набор цветов.
-        metrics : str (работа в процессе, необходимо доработать UI)
+        metrics : str
             Определяет какую метрику будет использовать алгоритм для определения схожести
             между пикселями и эталонами.
                 angle - косинус угла
                 pearson - корреляция пирсона
-                module - 
-                chebyshev - 
+                module - евклидово расстояние
+                chebyshev - расстояние чебышева
+    Возвращает
+    	cluster_mask : np.array
+    		Массив - маска, которая представляет исходное изображение в построчном виде,
+    		где каждый пиксель это номер класса. Номера классов начинаются
+    		с единицы. Если, после работы алгоритма некоторый пиксель имеет нулевой
+    		класс - это означает что сигнатура данного пикселя является постоянной, то есть
+    		данный вектор состоит из одного значения.
+    	cluster_mask_color : np.array
+    		RGB изображение в построчном виде, где каждый пиксель окрашен в цвет своего кластера
+		clusters : list
+			Набор эталонов. Представляется в виде списка из трёх массивов:
+            [np.array(signatures), np.array(amount_pix_clusts), np.array(thresholds)],
+            массив сигнатур эталонов, массив количества пикселей в каждом классе и
+            массив пороговых значений для каждого класса.
+		value_mask : np.array
+			Массив, предоставляет исходное изображение в построчном виде, где каждый
+			пиксель это значение отклонения пикселя от эталона своего класса
+
+
             
     ''' 
         
     HSI = np.int32( np.array(HSI) )
     rgb_image = np.array(rgb_image)
     
-    amo_of_pix = HSI.shape[0]
-    len_pix = HSI.shape[1]
-    cluster_mask = np.int16( np.zeros(shape = amo_of_pix) )
-    cluster_mask_color = np.int16( np.zeros(shape = (amo_of_pix, 3)) )
+    amo_of_pix = HSI.shape[0] # количество пикселей в ГСИ
+    len_pix = HSI.shape[1] # количество каналов
+    cluster_mask = np.int16( np.zeros(shape = amo_of_pix) ) # массив - маска, состоящая из номеров классов
+    cluster_mask_color = np.int16( np.zeros(shape = (amo_of_pix, 3)) ) # # RGB изображение кластеров
     if value_mask_on:
-        value_mask = np.zeros(shape = amo_of_pix)
-            
-    if len(clusters) == 0:
-        signatures = np.zeros(shape = (1, len_pix))
-        amo_of_pix_clusts = np.zeros(shape = 1)
-        thresholds = np.zeros(shape = 1)
-        cluster_mask[0] = 1
+        value_mask = np.zeros(shape = amo_of_pix) # массив значений отклонений
+    
+    if len(clusters) == 0: # если входящий набор эталонов пуст
+    	# создаются отдельные массивы для сигнатур, количества пикселей и пороговых значений
+        signatures = np.zeros(shape = (1, len_pix)) # для сигнатур эталонов
+        amo_of_pix_clusts = np.zeros(shape = 1) # для количества пикселей в каждом кластере
+        thresholds = np.zeros(shape = 1) # для пороговых значений для каждого кластера
+
+        start_clust = 0 # поиск первого пикселя с непостоянной сигнатурой
+        while all(HSI[start_clust] == HSI[start_clust][0]):
+            start_clust = start_clust + 1
         
-        nn_pix = 0
-        while all(HSI[nn_pix] != HSI[nn_pix][0]):
-            nn_pix = nn_pix + 1
-        signatures[0] = HSI[nn_pix]
-        
+        # этот пиксель объявляется как первый эталон
+        cluster_mask[start_clust] = 1
+        signatures[0] = HSI[start_clust]
         amo_of_pix_clusts[0] = 1
         thresholds[0] = threshold
-        start_clust = 1
         if value_mask_on:
-            value_mask[0] = 1
-    else:
+            value_mask[start_clust] = 1
+            
+        # далее алгоритм кластеризации пойдёт со следующего пикселя
+        start_clust = start_clust + 1
+    else: # если на вход поступил набор (list) эталонов
         
         try:
             assert(len(clusters) == 3)
@@ -212,28 +235,37 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
             print('different dimensions of parameters')
             return
         
+        # создаются отдельные массивы для сигнатур, количества пикселей и пороговых значений
+        # но в них вносится значения из входного списка эталонов
         signatures = np.array( clusters[0] )
         amo_of_pix_clusts = np.array( clusters[1] )
         thresholds = np.array( clusters[2] )
         start_clust = 0
-        amo_of_pix_clusts[:] = 0
+        amo_of_pix_clusts[:] = 0 # обнуление для количества пикселей в кластерах
     
     #print(amo_of_pix)
+    # главный цикл по пикселям изображения
     for i in range(start_clust, amo_of_pix):
         
+        # если пиксель с постоянной сигнатурой то его классификация пропускается
+        # этот пиксель будет помечен нулевым классом
         if all(HSI[i] == HSI[i][0]):
             continue
 
+        # поиск наилучшего совпадения между текущем пикселем и одним из эталонов
+        # с учёт пороговых значения для каждого эатлона
         ###################################################################################
         max_difference, class_number = arg_max_compliance(HSI[i], signatures, thresholds, metric)
         ###################################################################################
-        
+        # если поиск вернул значение больше нуля - то этот пиксель отмечается номером класса
+        # к которому принадлежит эталон с наилучшим совпадением, а также увеличивается на единицу
+        # количество пикселей в данном кластере и (по требованию) заносится значение отклонения от пикселя
         if max_difference > 0:
             cluster_mask[i] = class_number + 1
             amo_of_pix_clusts[class_number] = amo_of_pix_clusts[class_number] + 1
             if value_mask_on:
                 value_mask[i] = max_difference + thresholds[class_number]
-        else:
+        else: # иначе этот пиксель становится новым эталоном
             cluster_mask[i] = signatures.shape[0] + 1
             signatures = np.append(signatures, [HSI[i]], axis = 0)
             amo_of_pix_clusts = np.append(amo_of_pix_clusts, 1)
@@ -245,10 +277,14 @@ def reference_clustering(HSI, threshold = 0.90, clusters = [], value_mask_on = F
         #    print('\r', end = '')
         #    print(i,  end = '')
     
+    # раскраска производится по номерам классов, каждый класс - свой цвет
+    #если имеется RGB изображение, то цвет класса определяется средним цвет
+    #области каждого класса на RGB изображения 
     if len(rgb_image) != 0:
         for i in range(len(signatures)):
             for col in range(3):
                 cluster_mask_color[cluster_mask == i + 1, col] = rgb_image[cluster_mask == i + 1, col].mean()
+    # иначе, каждый класс окрашивается в цвет из заранее определенного набора цветов
     else:
         for i in range(len(signatures)):
             cluster_mask_color[cluster_mask == i + 1] = colors_for_clusters[i]
