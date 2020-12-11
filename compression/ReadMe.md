@@ -17,4 +17,4 @@
 
  -p, --path:        Путь до сжатого ГСИ
 
- Пример: python compression_script.py -p сompression_hsi.npz
+ Пример: python compression_script.py -p сompression_hsi.np
