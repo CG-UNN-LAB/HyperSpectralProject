@@ -10,7 +10,7 @@ import time
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--path', nargs = '+', type = str)
-    parser.add_argument('-b', '--bands', nargs = '+', type = int, default = [])
+    parser.add_argument('-b', '--bands', type = str, default = "None")
     parser.add_argument('-c', '--clustering', type = int, default = 0)
     parser.add_argument('-t', '--threshold', type = float, default = 0.3)
     parser.add_argument('-s', '--scale', type = int, default = 0)
@@ -141,13 +141,21 @@ if __name__ == "__main__":
             hsi = hsi - rayleigh_sig
             print("*******\nRayleigh scattering count completed")
 
-        if len(namespace.bands) == 2:
-            if namespace.bands[0] < namespace.bands[1]:
-                hsi = hsi[:, :, namespace.bands[0]:namespace.bands[1]]
-                print("*******\nNew HSI shape", hsi.shape)
-            else:
-                print("*******\nError: slice bands")
-                exit()
+        if namespace.bands != "None":
+            num_bands_f = open(namespace.bands, 'r')
+            num_bands = [line.strip() for line in num_bands_f]
+            num_bands = np.array(num_bands, dtype = np.uint16)
+            num_bands_f.close()
+            hsi = hsi[:, :, num_bands]
+            print("*******\nNew HSI shape", hsi.shape)
+
+        #if len(namespace.bands) == 2:
+        #    if namespace.bands[0] < namespace.bands[1]:
+        #        hsi = hsi[:, :, namespace.bands[0]:namespace.bands[1]]
+        #        print("*******\nNew HSI shape", hsi.shape)
+        #    else:
+        #        print("*******\nError: slice bands")
+        #        exit()
 
         hsi[hsi < 0] = 0
         hsi = np.uint16(hsi)
